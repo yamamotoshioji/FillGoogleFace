@@ -3,6 +3,8 @@ ver1y = 0
 ver2x = 0
 ver2y = 0
 import re
+import os
+import cv2
 
 def detect_faces(path):
     """Detects faces in an image."""
@@ -22,12 +24,12 @@ def detect_faces(path):
     # Names of likelihood from google.cloud.vision.enums
     likelihood_name = ('UNKNOWN', 'VERY_UNLIKELY', 'UNLIKELY', 'POSSIBLE',
                            'LIKELY', 'VERY_LIKELY')
-    print('Faces:')
+    #print('Faces:')
         
     for face in faces:
-        print('anger: {}'.format(likelihood_name[face.anger_likelihood]))
-        print('joy: {}'.format(likelihood_name[face.joy_likelihood]))
-        print('surprise: {}'.format(likelihood_name[face.surprise_likelihood]))
+     #   print('anger: {}'.format(likelihood_name[face.anger_likelihood]))
+     #   print('joy: {}'.format(likelihood_name[face.joy_likelihood]))
+     #   print('surprise: {}'.format(likelihood_name[face.surprise_likelihood]))
         
         for i, vertex in enumerate(face.bounding_poly.vertices,0):
             if i == 0 :
@@ -42,29 +44,40 @@ def detect_faces(path):
                 ver2x = vertex.x #右下のx座標
                 ver2y = vertex.y #右下のy座標
             
-        ver1y = ver1y+(ver2y-ver1y)/2
-        print(ver1x)
-        print(ver1y)
-        print(ver2x)
-        print(ver2y)
+        ver1y = ver1y+(ver2y-ver1y)/1.7
         vertices = (['({},{})'.format(vertex.x, vertex.y)
                     for vertex in face.bounding_poly.vertices])
         
-        print('face bounds: {}'.format(','.join(vertices)))
+       # print('face bounds: {}'.format(','.join(vertices)))
         
     if response.error.message:
         raise Exception(
             '{}\nFor more info on error messages, check: '
             'https://cloud.google.com/apis/design/errors'.format(
                 response.error.message))
-    return [ver1x,ver1y,ver2x,ver2y]
+    return (ver1x,ver1y),(ver2x,ver2y)
 
-from PIL import Image
-a = detect_faces("Face1.jpg")
-img = Image.open("Face1.jpg")
-#img_rs = img.resize((100, 200))
-from PIL import ImageDraw
-d = ImageDraw.Draw(img)
-d.rectangle([(ver1x,ver1y),(ver2x,ver2y)], fill='white', outline='white',  width=6)
-img.save('Face1_Mask.png')
-img.show()
+def main():
+    data_dir_path = u"./data_dir"
+    data_save_path= u"./data_save"
+    file_list = os.listdir(r'./data_dir/')
+    file_save_list = os.listdir(r'./data_save/')
+    
+    for file_name in file_list:
+        if file_name != '.DS_Store':
+            root, ext = os.path.splitext(file_name)
+            if ext == u'.png' or u'.jpeg' or u'.jpg':
+                abs_name = data_dir_path + '/' + file_name
+                image = cv2.imread(abs_name)
+                #以下各画像に対する処理を記載する
+                from PIL import Image
+                a,b= detect_faces(abs_name)
+                img = Image.open(abs_name)
+                from PIL import ImageDraw
+                d = ImageDraw.Draw(img)
+                d.rectangle([a,b], fill='white', outline='white',  width=1)
+                abs_name_end = data_save_path + '/' + 'end_' + file_name
+                img.save(abs_name_end)
+                img.show()
+
+main()
