@@ -6,6 +6,7 @@ import re
 import os
 import cv2
 
+
 def detect_faces(path):
     """Detects faces in an image."""
     from google.cloud import vision
@@ -25,12 +26,15 @@ def detect_faces(path):
     likelihood_name = ('UNKNOWN', 'VERY_UNLIKELY', 'UNLIKELY', 'POSSIBLE',
                            'LIKELY', 'VERY_LIKELY')
     #print('Faces:')
-        
+   
     for face in faces:
      #   print('anger: {}'.format(likelihood_name[face.anger_likelihood]))
      #   print('joy: {}'.format(likelihood_name[face.joy_likelihood]))
      #   print('surprise: {}'.format(likelihood_name[face.surprise_likelihood]))
-        
+       # for face.landmarks_key in face.landmarks:
+        #    print(face.landmarks_key)
+        print(face.landmarks)
+        print(face.bounding_poly)
         for i, vertex in enumerate(face.bounding_poly.vertices,0):
             if i == 0 :
                 global ver1x
@@ -69,7 +73,7 @@ def main():
             if ext == u'.png' or u'.jpeg' or u'.jpg':
                 abs_name = data_dir_path + '/' + file_name
                 image = cv2.imread(abs_name)
-                #以下各画像に対する処理を記載する
+                #以下各画像に対する処理
                 from PIL import Image
                 a,b= detect_faces(abs_name)
                 img = Image.open(abs_name)
