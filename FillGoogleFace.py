@@ -1,5 +1,4 @@
 ver1x = 0
-ver1y = 0
 ver2x = 0
 ver2y = 0
 import re
@@ -31,24 +30,21 @@ def detect_faces(path):
      #   print('anger: {}'.format(likelihood_name[face.anger_likelihood]))
      #   print('joy: {}'.format(likelihood_name[face.joy_likelihood]))
      #   print('surprise: {}'.format(likelihood_name[face.surprise_likelihood]))
-       # for face.landmarks_key in face.landmarks:
-        #    print(face.landmarks_key)
-        print(face.landmarks)
-        print(face.bounding_poly)
+      
+        ver1y = face.landmarks[0].position.y + (face.landmarks[7].position.y - face.landmarks[0].position.y)/2
+        
         for i, vertex in enumerate(face.bounding_poly.vertices,0):
             if i == 0 :
                 global ver1x
-                global ver1y
                 ver1x = vertex.x #左上のx座標
-                ver1y = vertex.y #左上のy座標
+                #ver1y = vertex.y #左上のy座標
             
             if i == 2 :
                 global ver2x
                 global ver2y
                 ver2x = vertex.x #右下のx座標
                 ver2y = vertex.y #右下のy座標
-            
-        ver1y = ver1y+(ver2y-ver1y)/1.7
+        
         vertices = (['({},{})'.format(vertex.x, vertex.y)
                     for vertex in face.bounding_poly.vertices])
         
